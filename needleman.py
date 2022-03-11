@@ -4,9 +4,9 @@ from pandas import *
 def alignSequences(sequenceFile):
  
     #loop through the rows of the sequence file
-    for row in range(sequenceFile.shape[0]):
-        sequence1 = sequenceFile["sequence1"][row]
-        sequence2 = sequenceFile["sequence2"][row]
+    for csv_row in range(sequenceFile.shape[0]):
+        sequence1 = sequenceFile["sequence1"][csv_row]
+        sequence2 = sequenceFile["sequence2"][csv_row]
         matrix = [[0]]
         d = -2
         #Generate 2d array with rows represented as sequence1, and columns as sequence2.  
@@ -52,7 +52,51 @@ def alignSequences(sequenceFile):
                 matrix[rowIndex].append(maxScore(rowIndex,columnIndex))
         #Proteins are the individual symbols in a sequence
         #Loop through the proteins in the first sequence
+        
+        #Backtracking
+        #Check if sequence row and column index are equal, find gaps
+        #Start at last row, last column and backtrack
+        sequence_alignment = ""
+        comparison_sequence = ""
+        row = len(sequence2)
+        column = len(sequence1)
+        if row > column:
+            comparison_sequence = sequence2
+        else:
+            comparison_sequence = sequence1
+        #Keep running until bound is reached
+        while row != 0 and column != 0:
+            #if sequence proteins match, go up diagonally
+            protein2 = sequence2[row-1]
+            protein1 = sequence1[column-1]
+            if  protein2 == protein1:
+                
+                #Add protein to the sequence (protein1 and protein2 are the same)
+                sequence_alignment = protein1 + sequence_alignment
 
+                row = row-1
+                column = column -1
+            else:
+                #create gap
+                
+                #look for the largest number adjacent, prioritize diagonal
+                if matrix[row-1][column-1] >= matrix[row-1][column]:
+                    #choose protein associated to largest
+                    row = row-1
+                    column = column -1
+
+                if matrix[row-1][column] > matrix[row][column-1]:
+                    #top side is greatest, move up and add gap 
+                    sequence_alignment = "-" + sequence_alignment
+                    row = row-1   
+                else:
+                    #left side is greatest, move left and add gap
+                    sequence_alignment = "-" + sequence_alignment
+                    column = column-1
+
+        print(sequence_alignment)  
+        print(comparison_sequence)
+        
         #pretty print matrix:
         print(DataFrame(matrix))
         #[0, A, B, C , D]
