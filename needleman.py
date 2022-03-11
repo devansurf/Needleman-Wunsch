@@ -19,13 +19,12 @@ def alignSequences(sequenceFile):
                 matrix.append([d*(rowIndex+1)])
 
         def scoringMatrix(row, column):
-            if len(sequence1)-1 < row or len(sequence2)-1 < column:
-                return None
+            # if len(sequence1)-1 < row or len(sequence2)-1 < column:
+            #     return None
             #top left diagonal plus the scoring matrix
             tld = matrix[row-1][column-1]
             sm = 0
-           
-            if sequence1[row] == sequence2[column]:
+            if sequence2[row-1] == sequence1[column-1]:
                 sm = 1
             else:
                 sm = -1
@@ -41,8 +40,8 @@ def alignSequences(sequenceFile):
             gp_2 = matrix[row-1][column] + d 
 
             #return the greatest number from the three
-            if scoring_matrix == None:
-                 return max([gp_1, gp_2])
+            # if scoring_matrix == None:
+            #      return max([gp_1, gp_2])
             #else
             return max([scoring_matrix, gp_1, gp_2])
            
