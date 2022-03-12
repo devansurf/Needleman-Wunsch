@@ -68,15 +68,10 @@ def alignSequences(sequenceFile):
 
             #check if match, mismatch, or gap
             #Scores
-            diag = matrix[row-1][column-1]
+            diag = scoringMatrix(row,column)
             # add gap penalties
             upper = matrix[row-1][column] + d
             side = matrix[row][column-1] + d
-            if proteinRow == proteinColumn:
-                #match
-                diag = diag +1
-            else:
-                diag = diag -1
 
             if (diag  > upper and diag  > side):
 
