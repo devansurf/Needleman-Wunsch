@@ -56,47 +56,51 @@ def alignSequences(sequenceFile):
         #Backtracking
         #Check if sequence row and column index are equal, find gaps
         #Start at last row, last column and backtrack
-        sequence_alignment = ""
-        comparison_sequence = ""
+        alignmentRow = ""
+        alignmentColumn = ""
         row = len(sequence2)
         column = len(sequence1)
-        if row > column:
-            comparison_sequence = sequence2
-        else:
-            comparison_sequence = sequence1
         #Keep running until bound is reached
         while row != 0 and column != 0:
             #if sequence proteins match, go up diagonally
-            protein2 = sequence2[row-1]
-            protein1 = sequence1[column-1]
-            if  protein2 == protein1:
-                
-                #Add protein to the sequence (protein1 and protein2 are the same)
-                sequence_alignment = protein1 + sequence_alignment
+            proteinRow = sequence2[row-1]
+            proteinColumn = sequence1[column-1]
 
+            #check if match, mismatch, or gap
+            #Scores
+            diag = matrix[row-1][column-1]
+            # add gap penalties
+            upper = matrix[row-1][column] + d
+            side = matrix[row][column-1] + d
+            if proteinRow == proteinColumn:
+                #match
+                diag = diag +1
+            else:
+                diag = diag -1
+
+            if (diag  > upper and diag  > side):
+
+                #Add protein to the sequence (protein1 and protein2 are the same)
+                alignmentRow = proteinRow + alignmentRow 
+                alignmentColumn = proteinColumn + alignmentColumn
                 row = row-1
                 column = column -1
+
+            elif upper > side:
+                #top side is greatest, move up and add gap 
+                alignmentRow = proteinRow + alignmentRow 
+                alignmentColumn = "-" + alignmentColumn
+
+                row = row-1   
             else:
-                #create gap
-                
-                #look for the largest number adjacent, prioritize diagonal
-                if matrix[row-1][column-1] >= matrix[row-1][column]:
-                    #choose protein associated to largest
-                    row = row-1
-                    column = column -1
+                #left side is greatest, move left and add gap
+                alignmentRow = "-" + alignmentRow 
+                alignmentColumn = proteinColumn + alignmentColumn
+                column = column-1
 
-                if matrix[row-1][column] > matrix[row][column-1]:
-                    #top side is greatest, move up and add gap 
-                    sequence_alignment = "-" + sequence_alignment
-                    row = row-1   
-                else:
-                    #left side is greatest, move left and add gap
-                    sequence_alignment = "-" + sequence_alignment
-                    column = column-1
-
-        print(sequence_alignment)  
-        print(comparison_sequence)
-        
+        print(alignmentRow)  
+        print(alignmentColumn)
+      
         #pretty print matrix:
         print(DataFrame(matrix))
         #[0, A, B, C , D]
